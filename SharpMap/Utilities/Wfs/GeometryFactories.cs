@@ -174,7 +174,7 @@ namespace SharpMap.Utilities.Wfs
         #region Protected Member
 
         /// <summary>
-        /// This method parses a coordinates or posList(from 'GetFeatureByOid' response). 
+        /// This method parses a coordinates or posList(from 'GetFeature' response). 
         /// </summary>
         /// <param name="reader">An XmlReader instance at the position of the coordinates to read</param>
         /// <returns>A point collection (the collected coordinates)</returns>
@@ -911,7 +911,7 @@ namespace SharpMap.Utilities.Wfs
         #region Internal Member
 
         /// <summary>
-        /// This method detects the geometry type from 'GetFeatureByOid' response and uses a geometry factory to create the 
+        /// This method detects the geometry type from 'GetFeature' response and uses a geometry factory to create the 
         /// appropriate geometries.
         /// </summary>
         /// <returns></returns>

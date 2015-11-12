@@ -18,7 +18,7 @@ namespace SharpMap.Data.Providers
     /// <summary>
     /// WFS dataprovider
     /// This provider can be used to obtain data from an OGC Web Feature Service.
-    /// It performs the following requests: 'GetCapabilities', 'DescribeFeatureType' and 'GetFeatureByOid'.
+    /// It performs the following requests: 'GetCapabilities', 'DescribeFeatureType' and 'GetFeature'.
     /// This class is optimized for performing requests to GeoServer (http://geoserver.org).
     /// Supported geometries are:
     /// - PointPropertyType
@@ -101,7 +101,7 @@ namespace SharpMap.Data.Providers
     ///layer5.Style.Fill = new SolidBrush(Color.LightBlue);
     ///
     /// // Labels
-    /// // Labels are collected when parsing the geometry. So there's just one 'GetFeatureByOid' call necessary.
+    /// // Labels are collected when parsing the geometry. So there's just one 'GetFeature' call necessary.
     /// // Otherwise (when calling twice for retrieving labels) there may be an inconsistent read...
     /// // If a label property is set, the quick geometry option is automatically set to 'false'.
     ///prov3.Label = "STATE_NAME";
@@ -229,7 +229,7 @@ namespace SharpMap.Data.Providers
 
         /// <summary>
         /// Gets or sets a value indicating whether extracting geometry information 
-        /// from 'GetFeatureByOid' response shall be done quickly without paying attention to
+        /// from 'GetFeature' response shall be done quickly without paying attention to
         /// context validation, polygon boundaries and multi-geometries.
         /// This option accelerates the geometry parsing process, 
         /// but in scarce cases can lead to errors. 
@@ -241,7 +241,7 @@ namespace SharpMap.Data.Providers
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the 'GetFeatureByOid' parser
+        /// Gets or sets a value indicating whether the 'GetFeature' parser
         /// should ignore multi-geometries (MultiPoint, MultiLineString, MultiCurve, MultiPolygon, MultiSurface). 
         /// By default it does not. Ignoring multi-geometries can lead to a better performance.
         /// </summary>
@@ -252,7 +252,7 @@ namespace SharpMap.Data.Providers
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the 'GetFeatureByOid' request
+        /// Gets or sets a value indicating whether the 'GetFeature' request
         /// should be done with HTTP GET. This option can be important when obtaining
         /// data from a WFS provided by an UMN MapServer.
         /// </summary>
@@ -511,7 +511,7 @@ namespace SharpMap.Data.Providers
                 _quickGeometries = false;
             }
 
-            // Configuration for GetFeatureByOid request */
+            // Configuration for GetFeature request */
             WFSClientHTTPConfigurator config = new WFSClientHTTPConfigurator(_textResources);
             config.configureForWfsGetFeatureRequest(_httpClientUtil, _featureTypeInfo, _label, bbox, _ogcFilter,
                                                     _getFeatureGETRequest);
@@ -809,10 +809,10 @@ namespace SharpMap.Data.Providers
                     _featureTypeInfoQueryManager.AddNamespace(_textResources.NSXLINKPREFIX, _textResources.NSXLINK);
                 }
 
-                /* Service URI (for WFS GetFeatureByOid request) */
+                /* Service URI (for WFS GetFeature request) */
                 _featureTypeInfo.ServiceURI = _featureTypeInfoQueryManager.GetValueFromNode
                     (_featureTypeInfoQueryManager.Compile(_textResources.XPATH_GETFEATURERESOURCE));
-                /* If no GetFeatureByOid URI could be found, try GetCapabilities URI */
+                /* If no GetFeature URI could be found, try GetCapabilities URI */
                 if (_featureTypeInfo.ServiceURI == null) _featureTypeInfo.ServiceURI = _getCapabilitiesUri;
                 else if (_featureTypeInfo.ServiceURI.EndsWith("?", StringComparison.Ordinal))
                     _featureTypeInfo.ServiceURI =
@@ -1072,7 +1072,7 @@ namespace SharpMap.Data.Providers
 
                 if (geomType == null)
                     /* Set geomType to an empty string in order to avoid exceptions.
-                    The geometry type is not necessary by all means - it can be detected in 'GetFeatureByOid' response too.. */
+                    The geometry type is not necessary by all means - it can be detected in 'GetFeature' response too.. */
                     geomType = string.Empty;
 
                 /* Remove prefix */
@@ -1165,7 +1165,7 @@ namespace SharpMap.Data.Providers
             }
 
             /// <summary>
-            /// Configures for WFS 'GetFeatureByOid' request using an instance implementing <see cref="SharpMap.Utilities.Wfs.IWFS_TextResources"/>.
+            /// Configures for WFS 'GetFeature' request using an instance implementing <see cref="SharpMap.Utilities.Wfs.IWFS_TextResources"/>.
             /// The <see cref="SharpMap.Utilities.Wfs.HttpClientUtil"/> instance is returned for immediate usage. 
             /// </summary>
             internal HttpClientUtil configureForWfsGetFeatureRequest(HttpClientUtil httpClientUtil,
