@@ -419,7 +419,6 @@ namespace SharpMap.Data.Providers
                                 var geom = Converters.WellKnownBinary.GeometryFromWKB.Parse((byte[]) dr[0], Factory);
                                 if (geom != null)
                                 {
-                                    if (_spatialObjectType == SqlServerSpatialObjectType.Geography) FlipXY(geom);
                                     features.Add(geom);
                                 }
                             }
@@ -453,7 +452,6 @@ namespace SharpMap.Data.Providers
                             if (dr[0] != DBNull.Value)
                             {
                                 geom = Converters.WellKnownBinary.GeometryFromWKB.Parse((byte[]) dr[0], Factory);
-                                if (_spatialObjectType == SqlServerSpatialObjectType.Geography) FlipXY(geom);
                             }
                         }
                     }
@@ -461,18 +459,6 @@ namespace SharpMap.Data.Providers
                 conn.Close();
             }
             return geom;
-        }
-
-        private static void FlipXY(IGeometry geom)
-        {
-            var coords = geom.Coordinates;
-            for (var i = 0; i < coords.Length; i++)
-            {
-                var x = coords[i].X;
-                coords[i].X = coords[i].Y;
-                coords[i].Y = x;
-            }
-            geom.GeometryChanged();
         }
 
         /// <summary>   
@@ -585,11 +571,6 @@ namespace SharpMap.Data.Providers
                             var tmpGeom =
                                 Converters.WellKnownBinary.GeometryFromWKB.Parse((byte[]) dr["sharpmap_tempgeometry"],
                                     Factory);
-                            if (tmpGeom != null && _spatialObjectType == SqlServerSpatialObjectType.Geography)
-                            {
-                                FlipXY(tmpGeom);
-                                tmpGeom.GeometryChanged();
-                            }
                             fdr.Geometry = tmpGeom;
                             fdt.AddRow(fdr);
                         }
@@ -695,11 +676,6 @@ namespace SharpMap.Data.Providers
                             var tmpGeom =
                                 Converters.WellKnownBinary.GeometryFromWKB.Parse((byte[]) dr["sharpmap_tempgeometry"],
                                     Factory);
-                            if (tmpGeom != null && _spatialObjectType == SqlServerSpatialObjectType.Geography)
-                            {
-                                FlipXY(tmpGeom);
-                                tmpGeom.GeometryChanged();
-                            }
                             fdr.Geometry = tmpGeom;
                             return fdr;
                         }
@@ -775,7 +751,7 @@ namespace SharpMap.Data.Providers
                         }
 
                     case SqlServer2008ExtentsMode.EnvelopeAggregate:
-                        sql = String.Format("SELECT {3}::EnvelopeAggregate(g.{0}{1}).STAsText() FROM {2} g ",
+                        sql = String.Format("SELECT {3}::EnvelopeAggregate(g.{0}{1}).CurveToLineWithTolerance(0.1, 0).STAsText() FROM {2} g ",
                             GeometryColumn, MakeValidString, QualifiedTable, _spatialObject);
 
                         if (!String.IsNullOrEmpty(_definitionQuery))
@@ -788,11 +764,6 @@ namespace SharpMap.Data.Providers
                                 {
                                     var wkt = dr.GetString(0);
                                     var g = Converters.WellKnownText.GeometryFromWKT.Parse(wkt);
-                                    if (_spatialObjectType == SqlServerSpatialObjectType.Geography)
-                                    {
-                                        FlipXY(g);
-                                        g.GeometryChanged();
-                                    }
                                     return g.EnvelopeInternal;
                                 }
                             }
